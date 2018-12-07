@@ -21,10 +21,20 @@ class TestVMware(unittest.TestCase):
         fake_folder = MagicMock()
         fake_folder.childEntity = [fake_vm]
         fake_vCenter.return_value.__enter__.return_value.get_by_name.return_value = fake_folder
-        fake_get_info.return_value = {'worked': True, 'note': 'Windows=10'}
+        fake_get_info.return_value = {'component' : "Windows",
+                                      'created': 1234,
+                                      'version': "10",
+                                      'configured': False,
+                                      'generation': 1,
+                                     }
 
         output = vmware.show_windows(username='alice')
-        expected = {'win10': {'note': 'Windows=10', 'worked': True}}
+        expected = {'win10': {'component' : "Windows",
+                              'created': 1234,
+                              'version': "10",
+                              'configured': False,
+                              'generation': 1,
+                             }}
 
         self.assertEqual(output, expected)
 
@@ -40,7 +50,12 @@ class TestVMware(unittest.TestCase):
         fake_folder = MagicMock()
         fake_folder.childEntity = [fake_vm]
         fake_vCenter.return_value.__enter__.return_value.get_by_name.return_value = fake_folder
-        fake_get_info.return_value = {'note' : 'Windows=10'}
+        fake_get_info.return_value = {'component' : "Windows",
+                                      'created': 1234,
+                                      'version': "10",
+                                      'configured': False,
+                                      'generation': 1,
+                                     }
 
         output = vmware.delete_windows(username='bob', machine_name='win10', logger=fake_logger)
         expected = None
@@ -59,19 +74,26 @@ class TestVMware(unittest.TestCase):
         fake_folder = MagicMock()
         fake_folder.childEntity = [fake_vm]
         fake_vCenter.return_value.__enter__.return_value.get_by_name.return_value = fake_folder
-        fake_get_info.return_value = {'note' : 'Windows=10'}
+        fake_get_info.return_value = {'component' : "Windows",
+                                      'created': 1234,
+                                      'version': "10",
+                                      'configured': False,
+                                      'generation': 1,
+                                     }
 
         with self.assertRaises(ValueError):
             vmware.delete_windows(username='bob', machine_name='myOtherWinBox', logger=fake_logger)
 
+    @patch.object(vmware.virtual_machine, 'set_meta')
     @patch.object(vmware, 'Ova')
     @patch.object(vmware.virtual_machine, 'get_info')
     @patch.object(vmware.virtual_machine, 'deploy_from_ova')
     @patch.object(vmware, 'consume_task')
     @patch.object(vmware, 'vCenter')
-    def test_create_windows(self, fake_vCenter, fake_consume_task, fake_deploy_from_ova, fake_get_info, fake_Ova):
+    def test_create_windows(self, fake_vCenter, fake_consume_task, fake_deploy_from_ova, fake_get_info, fake_Ova, fake_set_meta):
         """``create_windows`` returns a dictionary upon success"""
         fake_logger = MagicMock()
+        fake_deploy_from_ova.return_value.name = 'win10'
         fake_get_info.return_value = {'worked': True}
         fake_Ova.return_value.networks = ['someLAN']
         fake_vCenter.return_value.__enter__.return_value.networks = {'someLAN' : vmware.vim.Network(moId='1')}
@@ -81,7 +103,7 @@ class TestVMware(unittest.TestCase):
                                        image='10',
                                        network='someLAN',
                                        logger=fake_logger)
-        expected = {'worked': True}
+        expected = {'win10': {'worked': True}}
 
         self.assertEqual(output, expected)
 
