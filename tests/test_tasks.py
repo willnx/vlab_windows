@@ -15,7 +15,7 @@ class TestTasks(unittest.TestCase):
         """``show`` returns a dictionary when everything works as expected"""
         fake_vmware.show_windows.return_value = {'worked': True}
 
-        output = tasks.show(username='bob')
+        output = tasks.show(username='bob', txn_id='myId')
         expected = {'content' : {'worked': True}, 'error': None, 'params': {}}
 
         self.assertEqual(output, expected)
@@ -25,7 +25,7 @@ class TestTasks(unittest.TestCase):
         """``show`` sets the error in the dictionary to the ValueError message"""
         fake_vmware.show_windows.side_effect = [ValueError("testing")]
 
-        output = tasks.show(username='bob')
+        output = tasks.show(username='bob', txn_id='myId')
         expected = {'content' : {}, 'error': 'testing', 'params': {}}
 
         self.assertEqual(output, expected)
@@ -38,7 +38,8 @@ class TestTasks(unittest.TestCase):
         output = tasks.create(username='bob',
                               machine_name='win10',
                               image='10',
-                              network='someLAN')
+                              network='someLAN',
+                              txn_id='myId')
         expected = {'content' : {'worked': True}, 'error': None, 'params': {}}
 
         self.assertEqual(output, expected)
@@ -51,7 +52,8 @@ class TestTasks(unittest.TestCase):
         output = tasks.create(username='bob',
                               machine_name='win10',
                               image='10',
-                              network='someLAN')
+                              network='someLAN',
+                              txn_id='myId')
         expected = {'content' : {}, 'error': 'testing', 'params': {}}
 
         self.assertEqual(output, expected)
@@ -61,7 +63,7 @@ class TestTasks(unittest.TestCase):
         """``delete`` returns a dictionary when everything works as expected"""
         fake_vmware.delete_windows.return_value = {'worked': True}
 
-        output = tasks.delete(username='bob', machine_name='win10')
+        output = tasks.delete(username='bob', machine_name='win10', txn_id='myId')
         expected = {'content' : {}, 'error': None, 'params': {}}
 
         self.assertEqual(output, expected)
@@ -71,7 +73,7 @@ class TestTasks(unittest.TestCase):
         """``delete`` sets the error in the dictionary to the ValueError message"""
         fake_vmware.delete_windows.side_effect = [ValueError("testing")]
 
-        output = tasks.delete(username='bob', machine_name='win10')
+        output = tasks.delete(username='bob', machine_name='win10', txn_id='myId')
         expected = {'content' : {}, 'error': 'testing', 'params': {}}
 
         self.assertEqual(output, expected)
@@ -81,7 +83,7 @@ class TestTasks(unittest.TestCase):
         """``image`` returns a dictionary when everything works as expected"""
         fake_vmware.list_images.return_value = ['10', '8', '7']
 
-        output = tasks.image()
+        output = tasks.image(txn_id='myId')
         expected = {'content' : {'image' : ['10', '8', '7']}, 'error': None, 'params' : {}}
 
         self.assertEqual(output, expected)

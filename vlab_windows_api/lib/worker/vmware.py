@@ -9,10 +9,6 @@ from vlab_inf_common.vmware import vCenter, Ova, vim, virtual_machine, consume_t
 from vlab_windows_api.lib import const
 
 
-logger = get_task_logger(__name__)
-logger.setLevel(const.VLAB_WINDOWS_LOG_LEVEL.upper())
-
-
 def show_windows(username):
     """Obtain basic information about Windows
 
@@ -34,7 +30,7 @@ def show_windows(username):
     return windows_vms
 
 
-def delete_windows(username, machine_name):
+def delete_windows(username, machine_name, logger):
     """Unregister and destroy a user's Windows
 
     :Returns: None
@@ -44,6 +40,9 @@ def delete_windows(username, machine_name):
 
     :param machine_name: The name of the VM to delete
     :type machine_name: String
+
+    :param logger: An object for logging messages
+    :type logger: logging.LoggerAdapter
     """
     with vCenter(host=const.INF_VCENTER_SERVER, user=const.INF_VCENTER_USER, \
                  password=const.INF_VCENTER_PASSWORD) as vcenter:
@@ -63,7 +62,7 @@ def delete_windows(username, machine_name):
             raise ValueError('No {} named {} found'.format('windows', machine_name))
 
 
-def create_windows(username, machine_name, image, network):
+def create_windows(username, machine_name, image, network, logger):
     """Deploy a new instance of Windows
 
     :Returns: Dictionary
@@ -79,6 +78,9 @@ def create_windows(username, machine_name, image, network):
 
     :param network: The name of the network to connect the new Windows instance up to
     :type network: String
+
+    :param logger: An object for logging messages
+    :type logger: logging.LoggerAdapter
     """
     with vCenter(host=const.INF_VCENTER_SERVER, user=const.INF_VCENTER_USER,
                  password=const.INF_VCENTER_PASSWORD) as vcenter:

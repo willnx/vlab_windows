@@ -34,6 +34,7 @@ class TestVMware(unittest.TestCase):
     @patch.object(vmware, 'vCenter')
     def test_delete_windows(self, fake_vCenter, fake_consume_task, fake_power, fake_get_info):
         """``delete_windows`` returns None when everything works as expected"""
+        fake_logger = MagicMock()
         fake_vm = MagicMock()
         fake_vm.name = 'win10'
         fake_folder = MagicMock()
@@ -41,7 +42,7 @@ class TestVMware(unittest.TestCase):
         fake_vCenter.return_value.__enter__.return_value.get_by_name.return_value = fake_folder
         fake_get_info.return_value = {'note' : 'Windows=10'}
 
-        output = vmware.delete_windows(username='bob', machine_name='win10')
+        output = vmware.delete_windows(username='bob', machine_name='win10', logger=fake_logger)
         expected = None
 
         self.assertEqual(output, expected)
@@ -52,6 +53,7 @@ class TestVMware(unittest.TestCase):
     @patch.object(vmware, 'vCenter')
     def test_delete_windows_value_error(self, fake_vCenter, fake_consume_task, fake_power, fake_get_info):
         """``delete_windows`` raises ValueError when unable to find requested vm for deletion"""
+        fake_logger = MagicMock()
         fake_vm = MagicMock()
         fake_vm.name = 'win10'
         fake_folder = MagicMock()
@@ -60,7 +62,7 @@ class TestVMware(unittest.TestCase):
         fake_get_info.return_value = {'note' : 'Windows=10'}
 
         with self.assertRaises(ValueError):
-            vmware.delete_windows(username='bob', machine_name='myOtherWinBox')
+            vmware.delete_windows(username='bob', machine_name='myOtherWinBox', logger=fake_logger)
 
     @patch.object(vmware, 'Ova')
     @patch.object(vmware.virtual_machine, 'get_info')
@@ -69,6 +71,7 @@ class TestVMware(unittest.TestCase):
     @patch.object(vmware, 'vCenter')
     def test_create_windows(self, fake_vCenter, fake_consume_task, fake_deploy_from_ova, fake_get_info, fake_Ova):
         """``create_windows`` returns a dictionary upon success"""
+        fake_logger = MagicMock()
         fake_get_info.return_value = {'worked': True}
         fake_Ova.return_value.networks = ['someLAN']
         fake_vCenter.return_value.__enter__.return_value.networks = {'someLAN' : vmware.vim.Network(moId='1')}
@@ -76,7 +79,8 @@ class TestVMware(unittest.TestCase):
         output = vmware.create_windows(username='alice',
                                        machine_name='win10',
                                        image='10',
-                                       network='someLAN')
+                                       network='someLAN',
+                                       logger=fake_logger)
         expected = {'worked': True}
 
         self.assertEqual(output, expected)
@@ -88,6 +92,7 @@ class TestVMware(unittest.TestCase):
     @patch.object(vmware, 'vCenter')
     def test_create_windows_invalid_network(self, fake_vCenter, fake_consume_task, fake_deploy_from_ova, fake_get_info, fake_Ova):
         """``create_windows`` raises ValueError if supplied with a non-existing network"""
+        fake_logger = MagicMock()
         fake_get_info.return_value = {'worked': True}
         fake_Ova.return_value.networks = ['someLAN']
         fake_vCenter.return_value.__enter__.return_value.networks = {'someLAN' : vmware.vim.Network(moId='1')}
@@ -96,7 +101,8 @@ class TestVMware(unittest.TestCase):
             vmware.create_windows(username='alice',
                                   machine_name='win10',
                                   image='10',
-                                  network='someOtherLAN')
+                                  network='someOtherLAN',
+                                  logger=fake_logger)
 
     @patch.object(vmware.os, 'listdir')
     def test_list_images(self, fake_listdir):
