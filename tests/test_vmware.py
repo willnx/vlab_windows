@@ -21,20 +21,20 @@ class TestVMware(unittest.TestCase):
         fake_folder = MagicMock()
         fake_folder.childEntity = [fake_vm]
         fake_vCenter.return_value.__enter__.return_value.get_by_name.return_value = fake_folder
-        fake_get_info.return_value = {'component' : "Windows",
-                                      'created': 1234,
-                                      'version': "10",
-                                      'configured': False,
-                                      'generation': 1,
-                                     }
+        fake_get_info.return_value = {'meta' : {'component' : "Windows",
+                                                'created': 1234,
+                                                'version': "10",
+                                                'configured': False,
+                                                'generation': 1,
+                                                }}
 
         output = vmware.show_windows(username='alice')
-        expected = {'win10': {'component' : "Windows",
-                              'created': 1234,
-                              'version': "10",
-                              'configured': False,
-                              'generation': 1,
-                             }}
+        expected = {'win10': {'meta' : {'component' : "Windows",
+                                       'created': 1234,
+                                       'version': "10",
+                                       'configured': False,
+                                       'generation': 1,
+                                       }}}
 
         self.assertEqual(output, expected)
 
@@ -50,12 +50,12 @@ class TestVMware(unittest.TestCase):
         fake_folder = MagicMock()
         fake_folder.childEntity = [fake_vm]
         fake_vCenter.return_value.__enter__.return_value.get_by_name.return_value = fake_folder
-        fake_get_info.return_value = {'component' : "Windows",
-                                      'created': 1234,
-                                      'version': "10",
-                                      'configured': False,
-                                      'generation': 1,
-                                     }
+        fake_get_info.return_value = {'meta' : {'component' : "Windows",
+                                                'created': 1234,
+                                                'version': "10",
+                                                'configured': False,
+                                                'generation': 1,
+                                                }}
 
         output = vmware.delete_windows(username='bob', machine_name='win10', logger=fake_logger)
         expected = None
