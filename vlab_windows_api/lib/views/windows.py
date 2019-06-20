@@ -5,7 +5,7 @@ Defines the RESTful API for deploying Windows desktop clients
 import ujson
 from flask import current_app
 from flask_classy import request, route, Response
-from vlab_inf_common.views import TaskView
+from vlab_inf_common.views import MachineView
 from vlab_inf_common.vmware import vCenter, vim
 from vlab_api_common import describe, get_logger, requires, validate_input
 
@@ -16,9 +16,10 @@ from vlab_windows_api.lib import const
 logger = get_logger(__name__, loglevel=const.VLAB_WINDOWS_LOG_LEVEL)
 
 
-class WindowsView(TaskView):
+class WindowsView(MachineView):
     """API end point for working with Windows desktop VMs"""
     route_base = '/api/1/inf/windows'
+    RESOURCE = 'windows'
     POST_SCHEMA = { "$schema": "http://json-schema.org/draft-04/schema#",
                     "type": "object",
                     "description": "Create a windows",
