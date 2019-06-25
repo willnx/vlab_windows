@@ -18,7 +18,7 @@ logger = get_logger(__name__, loglevel=const.VLAB_WINDOWS_LOG_LEVEL)
 
 class WindowsView(MachineView):
     """API end point for working with Windows desktop VMs"""
-    route_base = '/api/1/inf/windows'
+    route_base = '/api/2/inf/windows'
     RESOURCE = 'windows'
     POST_SCHEMA = { "$schema": "http://json-schema.org/draft-04/schema#",
                     "type": "object",
@@ -82,7 +82,7 @@ class WindowsView(MachineView):
         body = kwargs['body']
         machine_name = body['name']
         image = body['image']
-        network = body['network']
+        network = '{}_{}'.format(username, body['network'])
         task = current_app.celery_app.send_task('windows.create', [username, machine_name, image, network, txn_id])
         resp_data['content'] = {'task-id': task.id}
         resp = Response(ujson.dumps(resp_data))
