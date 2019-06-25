@@ -34,9 +34,19 @@ class TestWindowsView(unittest.TestCase):
         cls.fake_task.id = 'asdf-asdf-asdf'
         app.celery_app.send_task.return_value = cls.fake_task
 
-    def test_get_task(self):
-        """WindowsView - GET on /api/1/inf/windows returns a task-id"""
+    def test_v1_deprecated(self):
+        """WindowsView - GET on /api/1/inf/windows returns an HTTP 404"""
         resp = self.app.get('/api/1/inf/windows',
+                            headers={'X-Auth': self.token})
+
+        status = resp.status_code
+        expected = 404
+
+        self.assertEqual(status, expected)
+
+    def test_get_task(self):
+        """WindowsView - GET on /api/2/inf/windows returns a task-id"""
+        resp = self.app.get('/api/2/inf/windows',
                             headers={'X-Auth': self.token})
 
         task_id = resp.json['content']['task-id']
@@ -45,18 +55,18 @@ class TestWindowsView(unittest.TestCase):
         self.assertEqual(task_id, expected)
 
     def test_get_task_link(self):
-        """WindowsView - GET on /api/1/inf/windows sets the Link header"""
-        resp = self.app.get('/api/1/inf/windows',
+        """WindowsView - GET on /api/2/inf/windows sets the Link header"""
+        resp = self.app.get('/api/2/inf/windows',
                             headers={'X-Auth': self.token})
 
         task_id = resp.headers['Link']
-        expected = '<https://localhost/api/1/inf/windows/task/asdf-asdf-asdf>; rel=status'
+        expected = '<https://localhost/api/2/inf/windows/task/asdf-asdf-asdf>; rel=status'
 
         self.assertEqual(task_id, expected)
 
     def test_post_task(self):
-        """WindowsView - POST on /api/1/inf/windows returns a task-id"""
-        resp = self.app.post('/api/1/inf/windows',
+        """WindowsView - POST on /api/2/inf/windows returns a task-id"""
+        resp = self.app.post('/api/2/inf/windows',
                              headers={'X-Auth': self.token},
                              json={'network': "someLAN",
                                    'name': "myWindowsClient",
@@ -68,21 +78,21 @@ class TestWindowsView(unittest.TestCase):
         self.assertEqual(task_id, expected)
 
     def test_post_task_link(self):
-        """WindowsView - POST on /api/1/inf/windows sets the Link header"""
-        resp = self.app.post('/api/1/inf/windows',
+        """WindowsView - POST on /api/2/inf/windows sets the Link header"""
+        resp = self.app.post('/api/2/inf/windows',
                              headers={'X-Auth': self.token},
                              json={'network': "someLAN",
                                    'name': "myWindowsClient",
                                    'image': '10'})
 
         task_id = resp.headers['Link']
-        expected = '<https://localhost/api/1/inf/windows/task/asdf-asdf-asdf>; rel=status'
+        expected = '<https://localhost/api/2/inf/windows/task/asdf-asdf-asdf>; rel=status'
 
         self.assertEqual(task_id, expected)
 
     def test_delete_task(self):
-        """WindowsView - DELETE on /api/1/inf/windows returns a task-id"""
-        resp = self.app.delete('/api/1/inf/windows',
+        """WindowsView - DELETE on /api/2/inf/windows returns a task-id"""
+        resp = self.app.delete('/api/2/inf/windows',
                                headers={'X-Auth': self.token},
                                json={'name': 'myWindowsClient'})
 
@@ -92,19 +102,19 @@ class TestWindowsView(unittest.TestCase):
         self.assertEqual(task_id, expected)
 
     def test_delete_task_link(self):
-        """WindowsView - DELETE on /api/1/inf/windows sets the Link header"""
-        resp = self.app.delete('/api/1/inf/windows',
+        """WindowsView - DELETE on /api/2/inf/windows sets the Link header"""
+        resp = self.app.delete('/api/2/inf/windows',
                                headers={'X-Auth': self.token},
                                json={'name': 'myWindowsClient'})
 
         task_id = resp.headers['Link']
-        expected = '<https://localhost/api/1/inf/windows/task/asdf-asdf-asdf>; rel=status'
+        expected = '<https://localhost/api/2/inf/windows/task/asdf-asdf-asdf>; rel=status'
 
         self.assertEqual(task_id, expected)
 
     def test_image(self):
         """WindowsView - GET on the ./image end point returns the a task-id"""
-        resp = self.app.get('/api/1/inf/windows/image',
+        resp = self.app.get('/api/2/inf/windows/image',
                             headers={'X-Auth': self.token})
 
         task_id = resp.json['content']['task-id']
@@ -114,11 +124,11 @@ class TestWindowsView(unittest.TestCase):
 
     def test_image_link(self):
         """WindowsView - GET on the ./image end point sets the Link header"""
-        resp = self.app.get('/api/1/inf/windows/image',
+        resp = self.app.get('/api/2/inf/windows/image',
                             headers={'X-Auth': self.token})
 
         task_id = resp.headers['Link']
-        expected = '<https://localhost/api/1/inf/windows/task/asdf-asdf-asdf>; rel=status'
+        expected = '<https://localhost/api/2/inf/windows/task/asdf-asdf-asdf>; rel=status'
 
         self.assertEqual(task_id, expected)
 
