@@ -11,14 +11,14 @@ services:
       - INF_VCENTER_USER=Administrator@vsphere.local
       - INF_VCENTER_PASSWORD=1.Password
     volumes:
-      - ./vlab_windows_api:/usr/lib/python3.6/site-packages/vlab_windows_api
+      - ./vlab_windows_api:/usr/lib/python3.8/site-packages/vlab_windows_api
     command: ["python3", "app.py"]
 
   windows-worker:
     image:
       willnx/vlab-windows-worker
     volumes:
-      - ./vlab_windows_api:/usr/lib/python3.6/site-packages/vlab_windows_api
+      - ./vlab_windows_api:/usr/lib/python3.8/site-packages/vlab_windows_api
       - /mnt/raid/images/windows:/images:ro
     environment:
       - INF_VCENTER_SERVER=changeME
